@@ -1,0 +1,14 @@
+---
+- hosts: servidores_redhat
+  tasks:
+  - name: Instalacao Apache
+    yum:
+      name: httpd
+      state: latest
+    notify: restart apache
+  handlers:
+    - name: restart apache
+      systemd:
+        name: httpd
+        state: restarted
+...

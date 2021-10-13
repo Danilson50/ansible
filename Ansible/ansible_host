@@ -1,0 +1,42 @@
+#Variaveis Geral
+[servidores:vars] 
+ansible_ssh_common_args="-o StrictHostKeyChecking=no"
+ansible_ssh_port=22
+#ansible_ssh_pass=
+#ansible_become=yes
+#ansible_become_method=sudo
+#ansible_become_user=
+#ansible_become_pass=
+#ansible_connection=ssh
+
+#Variaveis do Grupo Ubuntu
+[servidores_ubuntu:vars]
+ansible_ssh_user=ubuntu
+
+#Variaveis do Grupo RedHat
+[servidores_redhat:vars]
+ansible_ssh_user=ec2-user
+
+#Variaveis do Grupo Windows
+[servidores_windows:vars]
+ansible_port=5986
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+ansible_user=administrator
+ansible_password=""
+
+#Grupo de filhos
+[servidores:children] 
+servidores_ubuntu
+servidores_redhat
+servidores_windows
+
+#Grupo de servidores
+[servidores_ubuntu] 
+54.80.19.148
+
+[servidores_redhat] 
+3.83.131.21
+
+[servidores_windows] 
+18.204.210.143

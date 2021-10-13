@@ -1,0 +1,26 @@
+---
+- hosts: servidores_redhat
+  tasks:
+  - name: Remocao de Pacotes
+    yum:
+   # Forma de declarar o pacote
+   #   name: "[u'httpd']"
+      name: "{{ packages}}"
+      state: absent
+    vars: 
+      packages:
+        - httpd
+        - nginx
+
+  - name: Instalação de Pacotes
+    yum:
+   # Forma de declarar o pacote
+   #   name: "[u'httpd']"
+      name: "{{ packages}}"
+      state: latest
+    vars: 
+      packages:
+        - nmap
+        - tree
+        - vim
+...

@@ -1,0 +1,9 @@
+---
+#Gerenciamento de pacotes e atualização do sistema operacional
+- name: Atualizacao do sistema operacional
+  apt: name=* state=latest update_cache=yes
+  
+  #Instalacao Php
+- name: Instalacao do PHP
+  apt: name=php state=latest
+...

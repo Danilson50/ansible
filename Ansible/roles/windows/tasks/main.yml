@@ -1,0 +1,36 @@
+---
+
+#- name: USERS | Adicionando usuários
+#  win_domain_user:
+#    name: ozzy
+#    firstname: Ozzy
+#    surname: Osbourne
+#    company: Black Sabbath
+#    password: Senha123
+#    state: present
+#    groups:
+#      - Domain Admins
+#      - Administrators
+
+- name: COPY | Copiando arquivo de teste
+  win_copy:
+    src: teste.txt
+    dest: C:\teste.txt
+
+- name: CHOCOLATEY | Instalando Chocolatey
+  win_shell: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+- name: CHOCOLATEY | Desabilitando  enhanced exit codes
+  win_chocolatey_feature:
+    name: useEnhancedExitCodes
+    state: disabled
+
+- name: CHOCOLATEY | Instalando Softwares
+  win_chocolatey:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - git
+    - firefox
+    - putty
+...

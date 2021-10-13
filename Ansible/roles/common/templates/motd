@@ -1,0 +1,6 @@
+---------------------------------
+        Servidor Ubuntu
+Hostname.:"{{ansible_fqdn}}"
+Endereco IP.:"{{ansible_all_ipv4_addresses}}"
+
+---------------------------------
