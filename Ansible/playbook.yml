@@ -3,4 +3,5 @@
   roles:
     #- common
     #- update
-    - windows
+    #- windows
+    - windows-iis

@@ -1,0 +1,59 @@
+---
+
+- name: APT | Install Requirements
+  apt: 
+    name: ['software-properties-common', 'dirmngr', 'python-mysqldb', 'python3-mysqldb', 'python-apt', 'python3-apt']
+    state: latest
+
+- name: APT | Add key from MariaDB
+  shell: sudo apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc'
+  args:
+    warn: false
+
+- name: APT | Add repository (MariaDB)
+  apt_repository:
+    repo: 'deb [arch=amd64] http://mirror.ufscar.br/mariadb/repo/10.5/debian buster main'
+    state: present
+
+- name: APT | Update Cache
+  apt: update_cache=yes
+
+- name: APT | Update System
+  apt: name="*" state=latest
+
+- name: APT | Install MariaDB
+  apt: name=mariadb-server state=latest
+
+- name: SISOP | Restart MariaDB
+  systemd: name=mariadb state=restarted enabled=yes daemon_reload=yes
+
+- name: MYSQL | Create a new database
+  mysql_db:
+    name: '{{ db_name }}'
+    state: present
+    login_user: root
+    login_password: ''
+
+- name: MySQL | Create new user and grant all privileges on DB
+  mysql_user:
+    name: '{{ db_user }}'
+    password: '{{ db_user_password }}'
+    priv: '{{ db_name }}.*:ALL'
+    host: '%'
+    login_user: root
+    login_password: ''
+
+- name: MySQL | Update root password
+  mysql_user:
+    name: root
+    password: '{{ root_password }}'
+    priv: '*.*:ALL'
+    host: $item
+    login_user: root
+    login_password: ''
+  with_items:
+    - 127.0.0.1
+    - localhost
+    - ::1
+
+...

@@ -1,0 +1,12 @@
+---
+
+type: t2.micro
+sg: sg-0529062a5d07f7eab 
+keypair: MinhaChaveSSH
+subnet: subnet-1deb2d3c
+public_ip: yes
+tag_name: server001
+tag_ambiente: production
+count: 1
+
+...

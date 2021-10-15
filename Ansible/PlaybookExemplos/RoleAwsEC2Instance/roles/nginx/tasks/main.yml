@@ -1,0 +1,55 @@
+---
+
+- name: SISOP | Copy nginx.repo to target
+  copy: src=nginx.repo dest=/etc/yum.repos.d/nginx.repo 
+
+- name: SISOP | Update System
+  yum: name=* state=latest update_cache=yes
+
+- name: SISOP | Install requirements
+  yum: 
+    name: ['unzip', 'tar']
+    state: latest
+
+- name: NGINX | Install nginx (latest version)
+  yum: 
+    name: ['nginx.x86_64', 'nginx-debuginfo.x86_64']
+    state: latest
+
+- name: NGINX | Creating security copy from /etc/nginx
+  command: mv /etc/nginx /etc/nginx_default
+  args:
+    warn: false
+
+- name: NGINX | Extract nginx.tar.gz into /etc
+  unarchive:
+    src: nginx.tar.gz
+    dest: /etc/
+
+- name: NGINX | Change ownership and group on nginx directory
+  file:
+   path: /etc/nginx
+   owner: root
+   group: root
+   mode: 0755
+   recurse: yes
+
+- name: SISOP | Creating directory /var/www/html
+  file: path={{item}} state=directory mode=775 owner=nginx group=nginx
+  with_items:
+    - /var/www
+    - /var/www/html
+
+- name: NGINX | Copy index.html (template)
+  copy: src={{ item }} dest=/var/www/html force=yes owner=nginx group=nginx mode=0644
+  with_items:
+    - index.html
+    - ansible.mp4
+
+- name: SISOP | Stop NFtables (Firewall)
+  shell: nft flush ruleset
+  args:
+    warn: false
+  notify: Restart nginx
+
+...

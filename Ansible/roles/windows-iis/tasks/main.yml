@@ -1,0 +1,64 @@
+---
+#Instalação do Chocolatey
+- name: CHOCOLATEY | Instalando Chocolatey
+  win_shell: Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+- name: CHOCOLATEY | Desabilitando  enhanced exit codes
+  win_chocolatey_feature:
+    name: useEnhancedExitCodes
+    state: disabled
+
+#Instalação de programas com chocolatey
+- name: CHOCOLATEY | Instalando Softwares
+  win_chocolatey:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - 7zip
+    - firefox
+ 
+ #TimeZone   
+- name: Timezone (UTC-03:00) Cayenne, Fortaleza 
+  win_timezone:
+    timezone: SA Eastern Standard Time
+
+ #Region   
+- name: Region set format, location and unicode to Brazil and copy settings, reboot if required
+  win_region:
+    location: 32
+    format: pt-BR
+    unicode_language: pt-BR
+  register: result
+
+#Instalação do IIS
+- name: Instalacao do IIS
+  win_feature:
+    name: Web-Server
+    state: present
+    include_sub_features: yes
+    include_management_tools: yes
+  register: win_feature
+
+- name: Install .Net 
+  win_feature:
+    name: 
+    - NET-HTTP-Activation
+    - NET-Non-HTTP-Activ
+    - NET-WCF-HTTP-Activation45
+    - NET-WCF-MSMQ-Activation45
+    - NET-WCF-Pipe-Activation45
+    - NET-WCF-TCP-Activation45
+    state: present
+
+- name: Reboot if installing Web-Server feature requires it
+  win_reboot:
+  when: win_feature.reboot_required
+ 
+ #Copiando arquivos   
+- name: COPY | Copiando arquivo de teste
+  win_copy:
+    src: teste.txt
+    dest: C:\teste.txt
+
+
+...

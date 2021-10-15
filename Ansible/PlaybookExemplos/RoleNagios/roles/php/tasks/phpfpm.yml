@@ -1,0 +1,40 @@
+---
+
+- name: SISOP | Update System
+  yum: name=* state=latest update_cache=yes
+
+- name: SISOP | Install packages
+  yum: 
+    name: php-fpm.x86_64
+    state: latest
+
+- name: PHPFPM | Creating security copy from /etc/php-fpm.conf
+  command: cp /etc/php-fpm.conf /etc/php-fpm.conf_original
+  args:
+    warn: false
+
+- name: PHPFPM | Creating security copy from /etc/php-fpm.d/www.conf
+  command: mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.conf_original
+  args:
+    warn: false
+
+- name: PHPFPM | Copy www.conf default
+  copy: src=www.conf dest=/etc/php-fpm.d/www.conf
+
+- name: SISOP | Creating directory
+  file: path={{item}} state=directory mode=755 owner=nginx group=nginx
+  with_items:
+      - /var/log/php-fpm
+      - /var/lib/php/session
+      - /var/lib/php/wsdlcache
+
+- name: PHPFPM | Checking PHP Version
+  shell: php-fpm -v
+  register: phpfpmversion
+  args:
+    warn: false
+
+- debug: msg={{ phpfpmversion.stdout }}
+  notify: Restart phpfpm
+
+...

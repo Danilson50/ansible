@@ -1,0 +1,11 @@
+---
+
+- import_tasks: php.yml
+  when: php_enabled | bool
+  tags: sysctl
+
+- import_tasks: phpfpm.yml
+  when: phpfpm_enabled | bool
+  tags: prelink
+
+...

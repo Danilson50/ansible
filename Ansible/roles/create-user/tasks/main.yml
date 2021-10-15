@@ -1,0 +1,9 @@
+---
+# Adicionar usuario no linux
+- Name: Adicionar usuario no linux 
+  User:
+    name: teste01
+    shell: /bin/bash
+    password: "{{ password }}"
+    aspend: yes
+...

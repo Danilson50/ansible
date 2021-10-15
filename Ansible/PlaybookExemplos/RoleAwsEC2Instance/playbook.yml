@@ -1,0 +1,10 @@
+- name: Default Playbook - Starting Deploy
+  hosts: localhost
+  connection: local
+  roles: 
+    - aws-ec2-instance
+    #- common 
+    #- nginx
+    #- php
+    #- mariadb
+    #- nagios

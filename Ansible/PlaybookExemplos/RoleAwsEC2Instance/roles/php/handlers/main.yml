@@ -1,0 +1,10 @@
+---
+
+- name: Restart phpfpm
+  systemd:
+    name: php-fpm
+    state: restarted
+    reload_daemon: yes
+    enable: yes
+
+...

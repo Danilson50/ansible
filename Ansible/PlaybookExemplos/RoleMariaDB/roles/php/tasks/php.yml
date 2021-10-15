@@ -1,0 +1,36 @@
+---
+
+- name: SISOP | Update System
+  yum: name=* state=latest update_cache=yes
+
+- name: SISOP | Install packages
+  yum: name={{ packages }} state=latest
+
+- name: PHP | Creating security copy from /etc/php.ini
+  command: cp /etc/php.ini /etc/php.ini_original
+  args:
+    warn: false
+
+- name: PHP | Setting timezone on php.ini
+  lineinfile:
+    dest=/etc/php.ini
+    state=present
+    regexp=';date.timezone ='
+    line='date.timezone = America/Sao_paulo'
+
+- name: SISOP | Creating directory
+  file: path={{item}} state=directory mode=755 owner=nginx group=nginx
+  with_items:
+      - /var/log/php-fpm
+      - /var/lib/php/session
+      - /var/lib/php/wsdlcache
+
+- name: PHP | Checking PHP Version
+  shell: php -v
+  register: phpversion
+  args:
+    warn: false
+
+- debug: msg={{ phpversion.stdout }}
+
+...
