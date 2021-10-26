@@ -18,10 +18,9 @@ Podemos ver os seguintes arquivos nas pastas:
 ```
    **Pacotes Necessarios** 
 ```sh
- apk add ansible
- apk add py3-pip
- pip install pywinrm
- ansible-galaxy collection install ansible.windows
+
+ apk add ansible py3-pip && pip install pywinrm && ansible-galaxy collection install ansible.windows
+
 ```
 
 
