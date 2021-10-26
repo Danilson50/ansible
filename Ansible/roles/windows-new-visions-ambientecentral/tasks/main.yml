@@ -1,0 +1,160 @@
+---
+#Copiando arquivos   
+- name: COPY | Copiando arquivo 
+  win_copy:
+    src: "{{ file }}"
+    dest: "{{ folder }}"
+ 
+#Extraindo arquivos 
+- name: Extraindo arquivos copiados
+  community.windows.win_unzip:
+    src: "{{folder}}{{file}}"
+    dest: "{{folder}}"
+    #password: abcd
+    #delete_archive: yes
+
+#Rename folder
+- name: rename the {{ appOldName }} to  {{ appName }}
+  win_command: "cmd.exe /c rename {{ folder }}{{ appOldName }} {{ appName }}"
+
+#Powershell com parametros para copia dos arquivos
+- name: Copy Files for IIS
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [String]
+          $FolderIIS
+      )
+      Copy-Item -Path $Folder -Destination $FolderIIS -Recurse
+
+    parameters:
+      Folder: "{{ folder }}{{ appName }}"
+      FolderIIS: "{{ folderIIS }}{{ appName }}"
+     # Force: true
+
+#Creação do Pool do IIS
+- name: Creates an application pool, sets attributes and starts it
+  community.windows.win_iis_webapppool:
+    name: "{{ appName }}"
+    state: started
+    attributes:
+      managedRuntimeVersion: v4.0
+      autoStart: yes
+
+#Configuracao do Pool do IIS
+- name: Configuration on application pool, sets attributes and starts it
+  community.windows.win_iis_webapppool:
+    name: "{{ appName }}"
+    state: started
+    attributes:
+      enable32BitAppOnWin64: yes
+      startMode: 1
+
+
+#Criacao do Site do TopWeb
+- name: Add Site on IIS
+  community.windows.win_iis_webapplication:
+    name: "{{ appName }}"
+    site: "{{ siteDefault }}"
+    state: present
+    physical_path: "{{ folderIIS }}{{ appName }}\\"
+    application_pool: "{{ appName }}"
+
+
+#Powershell Replace web.config com parametros 
+- name: Replace web.config
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [String]
+          $Text1,
+
+          [String]
+          $Text2,
+
+          [String]
+          $Text3,
+
+          [String]
+          $Text4,
+
+          [String]
+          $Text5,
+
+          [String]
+          $Text6,
+
+          [String]
+          $Text7,
+
+          [String]
+          $Text8,
+
+          [String]
+          $Text9,
+
+          [String]
+          $Text10,
+
+          [String]
+          $Text11,
+
+          [String]
+          $Text12
+      )
+      ((Get-Content -path $Folder -Raw) -replace $Text1,$Text2) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text3,$Text4) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text5,$Text6) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text7,$Text8) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text9,$Text10) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text11,$Text12) | Set-Content -Path $Folder
+
+    parameters:
+      Folder: "{{ folderIIS }}{{ appName }}\\{{ rFile }}"
+     # FolderIIS: "{{ folderIIS }}"
+      
+      Text1: "<add key=\"PontoDeLigacaoRedis\" value=\"127.0.0.1:6379\" />"
+      Text2: "<add key=\"PontoDeLigacaoRedis\" value=\"{{ redis }}:6379\"/>"
+      
+      Text3: "<add key=\"BancoDeDadosRedis\" value=\"0\" />"
+      Text4: "<add key=\"BancoDeDadosRedis\" value=\"{{ bdRedis }}\" />"
+      
+      Text5: "<add key=\"PontoDeLigacaoRedisPersistente\" value=\"127.0.0.1:6379\" />"
+      Text6: "<add key=\"PontoDeLigacaoRedisPersistente\" value=\"{{ redis }}:6379\" />"
+      
+      Text7: "<add key=\"BancoDeDadosRedisPersistente\" value=\"15\" />"
+      Text8: "<add key=\"BancoDeDadosRedisPersistente\" value=\"{{ bdRedisPersistencia }}\" />"
+
+      Text9: "<add key=\"EnderecoDoManual\" value=\"\" />"
+      Text10: "<add key=\"EnderecoDoManual\" value=\"{{ enderecoDoManual }}\" />"
+
+      Text11: "<add key=\"EnderecoDaExecucaoDeModeloDeConsulta\" value=\"\" />"
+      Text12: "<add key=\"EnderecoDaExecucaoDeModeloDeConsulta\" value=\"{{ enderecoDaExecucaoDeModeloDeConsulta }}\" />"
+
+#Powershell Remover arquivos antigos com parametros 
+- name: Clear Files for folder
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [Switch]
+          $Force
+      )
+      Remove-Item -Path $Folder -Recurse -Force:$Force
+
+    parameters:
+      Folder: "{{ folder }}"
+     # FolderIIS: "{{ folderIIS }}"
+      Force: true
+...
