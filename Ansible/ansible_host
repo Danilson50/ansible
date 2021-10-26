@@ -23,7 +23,8 @@ ansible_port=5986
 ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
 ansible_user=administrator
-ansible_password=""
+ansible_password="Jcze4US(G@*-=c4C&kO%eRUY2w5Vs)EM"
+
 
 #Grupo de filhos
 [servidores:children] 
@@ -33,10 +34,11 @@ servidores_windows
 
 #Grupo de servidores
 [servidores_ubuntu] 
-54.80.19.148
+34.201.52.125
 
 [servidores_redhat] 
 3.83.131.21
 
 [servidores_windows] 
-34.224.101.43
+34.238.49.231
+

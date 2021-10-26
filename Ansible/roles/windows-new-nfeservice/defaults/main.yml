@@ -1,0 +1,16 @@
+---
+file: ServicosNFe.zip
+folder: C:\Users\Public\Documents\temp\
+folderIIS: C:\inetpub\wwwroot\
+client: Aja
+siteDefault: Default Web Site
+subSite: TopManager
+virtualPath: /TopManager/Aja/
+appOldName: ServicosNFe
+appName: TopManagerNfeServicos
+rFile: Web.config
+redis: redis.topmanager.com.br
+bdRedis: 0
+bdRedisPersistencia: 15
+chaveNfeClient: h5xlPh8PXaCAJblymzg9ULFAFtZPtDRJTu6iAuWByN/ikQRs5Z9rt5Z//2zfoc25+RfEW80XdpFuYkKtoa+mAA==
+...

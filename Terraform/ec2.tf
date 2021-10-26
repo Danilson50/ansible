@@ -28,6 +28,7 @@ resource "aws_instance" "windows" {
   }
 
 }
+
 /*
 resource "aws_instance" "redhat" {
   ami           = "ami-0b0af3577fe5e3532"

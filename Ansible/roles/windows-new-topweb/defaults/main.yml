@@ -1,0 +1,15 @@
+---
+file: TopManagerWebApp.zip
+folder: C:\Users\Public\Documents\temp\
+folderIIS: C:\inetpub\wwwroot\
+client: Aja
+siteDefault: Default Web Site
+subSite: TopManager
+virtualPath: /TopManager/Aja/
+appOldName: TopManagerWebApp
+appName: TopManagerWeb
+rFile: Web.config
+redis: redis.topmanager.com.br
+bdRedis: 0
+bdRedisPersistencia: 15
+...

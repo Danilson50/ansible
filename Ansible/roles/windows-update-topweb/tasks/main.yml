@@ -1,0 +1,163 @@
+---
+#Copiando arquivos   
+- name: COPY | Copiando arquivo 
+  win_copy:
+    src: "{{ file }}"
+    dest: "{{ folder }}"
+ 
+#Extraindo arquivos 
+- name: Extraindo arquivos copiados
+  community.windows.win_unzip:
+    src: "{{folder}}{{file}}"
+    dest: "{{folder}}"
+    #password: abcd
+    #delete_archive: yes
+
+#Rename folder
+- name: rename the {{ appOldName }} to  {{ appName }}
+  win_command: "cmd.exe /c rename {{ folder }}{{ appOldName }} {{ appName }}"
+
+#Stop Pool da Versao 
+- name: Stop Pool da Versao
+  community.windows.win_iis_webapppool:
+    name: "{{ appName }}{{ client }}App"
+    state: stopped
+
+#Powershell com parametros para fazer backup dos arquivos antigos
+- name: Copy Files for backup
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [String]
+          $FolderBackup,
+
+          [Switch]
+          $Force
+      )
+      
+      if(Test-Path ($FolderBackup)){
+        Remove-Item -Path $FolderBackup -Recurse -Force:$Force
+      } 
+      if(-not (Test-Path ($FolderBackup))){
+        New-Item -ItemType "directory" -Path $FolderBackup 
+      }   
+       
+      Get-ChildItem -Path $Folder -Recurse -Exclude "Backup\" |  Move-Item -Destination $FolderBackup
+      
+    parameters:
+      Folder: "{{ folderIIS }}{{ subSite }}//{{ client }}//{{ appName }}"
+      FolderBackup: "{{ folderIIS }}{{ subSite }}//{{ client }}//{{ appName }}\\Backup\\"
+      Force: true  
+
+
+#Powershell com parametros para copia dos arquivos
+- name: Copy Files for IIS
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [String]
+          $FolderIIS
+      )
+      Copy-Item -Path $Folder -Destination $FolderIIS -Recurse
+
+    parameters:
+      Folder: "{{ folder }}{{ appName }}"
+      FolderIIS: "{{ folderIIS }}{{ subSite }}\\{{ client }}"
+     # Force: true
+
+#Powershell Replace web.config com parametros 
+- name: Replace web.config
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [String]
+          $Text1,
+
+          [String]
+          $Text2,
+
+          [String]
+          $Text3,
+
+          [String]
+          $Text4,
+
+          [String]
+          $Text5,
+
+          [String]
+          $Text6,
+
+          [String]
+          $Text7,
+
+          [String]
+          $Text8,
+
+          [String]
+          $Text9,
+
+          [String]
+          $Text10
+      )
+      ((Get-Content -path $Folder -Raw) -replace $Text1,$Text2) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text3,$Text4) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text5,$Text6) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text7,$Text8) | Set-Content -Path $Folder
+      ((Get-Content -path $Folder -Raw) -replace $Text9,$Text10) | Set-Content -Path $Folder
+
+    parameters:
+      Folder: "{{ folderIIS }}{{ subSite }}\\{{ client }}\\{{ appName }}\\{{ rFile }}"
+     # FolderIIS: "{{ folderIIS }}"
+      Text1: "<add key=\"NomeDoSite\" value=\"RcnBs\" />"
+      Text2: "<add key=\"NomeDoSite\" value=\"{{ client }}\" />"
+
+      Text3: "<!--<add key=\"PontoDeLigacaoRedis\" value=\"127.0.0.1:6379\"/>-->"
+      Text4: "<add key=\"PontoDeLigacaoRedis\" value=\"{{ redis }}:6379\"/>"
+      
+      Text5: "<!--<add key=\"BancoDeDadosRedis\" value=\"0\" />-->"
+      Text6: "<add key=\"BancoDeDadosRedis\" value=\"{{ bdRedis }}\" />"
+      
+      Text7: "<!--<add key=\"PontoDeLigacaoRedisPersistente\" value=\"127.0.0.1:6379\" />-->"
+      Text8: "<add key=\"PontoDeLigacaoRedisPersistente\" value=\"{{ redis }}:6379\" />"
+      
+      Text9: "<!--<add key=\"BancoDeDadosRedisPersistente\" value=\"15\" />-->"
+      Text10: "<add key=\"BancoDeDadosRedisPersistente\" value=\"{{ bdRedisPersistencia }}\" />"
+
+#Start Pool da Versao 
+- name: Start Pool da Versao
+  community.windows.win_iis_webapppool:
+    name: "{{ appName }}{{ client }}App"
+    state: started
+
+#Powershell Remover arquivos antigos com parametros 
+- name: Clear Files for folder
+  ansible.windows.win_powershell:
+    script: |
+      [CmdletBinding()]
+      param (
+          [String]
+          $Folder,
+
+          [Switch]
+          $Force
+      )
+      Remove-Item -Path $Folder -Recurse -Force:$Force
+
+    parameters:
+      Folder: "{{ folder }}"
+     # FolderIIS: "{{ folderIIS }}"
+      Force: true
+...

@@ -4,4 +4,17 @@
     #- common
     #- update
     #- windows
-    - windows-iis
+    #- windows-iis
+    
+    #Copia de arquivo Json
+    #- windows-copy-json
+
+    # Instalação Nova de Versão
+    #- windows-new-db
+    #- windows-new-topweb
+    #- windows-new-nfeservice
+    
+    # Update de Versão
+    #- windows-update-db
+    #- windows-update-nfeservice
+    - windows-update-topweb

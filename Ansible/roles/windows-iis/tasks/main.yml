@@ -16,7 +16,40 @@
   with_items:
     - 7zip
     - firefox
+
+- name: dotnetcore 2.0.5
+  win_chocolatey:
+    name: dotnetcore
+    state: present
+    allow_multiple: yes
+    version: 2.0.5
+   # source: http://internal/odata/repo
+
+- name: dotnetcore 3.0.0
+  win_chocolatey:
+    name: dotnetcore
+    state: present
+    allow_multiple: yes
+    version: 3.0.0
+  #  source: http://internal/odata/repo
+
+- name: dotnetcore-runtime.install 3.0.0
+  win_chocolatey:
+    name: dotnetcore-runtime.install
+    state: present
+    allow_multiple: yes
+    version: 3.0.0
+  #  source: http://internal/odata/repo
+
+- name: dotnet-5.0-aspnetruntime installed
+  win_chocolatey:
+    name: dotnet-5.0-aspnetruntime
+    state: present
+    allow_multiple: yes
+    version: 5.0.11
+   # source: http://internal/odata/repo
  
+
  #TimeZone   
 - name: Timezone (UTC-03:00) Cayenne, Fortaleza 
   win_timezone:
@@ -39,7 +72,7 @@
     include_management_tools: yes
   register: win_feature
 
-- name: Install .Net 
+- name: Install Complements .Net Feature 
   win_feature:
     name: 
     - NET-HTTP-Activation
@@ -54,11 +87,4 @@
   win_reboot:
   when: win_feature.reboot_required
  
- #Copiando arquivos   
-- name: COPY | Copiando arquivo de teste
-  win_copy:
-    src: teste.txt
-    dest: C:\teste.txt
-
-
 ...
