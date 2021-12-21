@@ -6,19 +6,4 @@
     #- windows
     #- windows-iis
     
-    #Copia de arquivo Json
-    #- windows-copy-json
-
-    # Instalação Nova de Versão
-    #- windows-new-db
-    #- windows-new-topweb
-    #- windows-new-nfeservice
-    #- windows-new-visions-site
-    #- windows-new-visions-ambientecentral
-    
-    # Update de Versão
-    #- windows-update-db
-    #- windows-update-nfeservice
-    #- windows-update-topweb
-    #- windows-update-visions-site
-    - windows-update-visions-ambientecentral
+   
